@@ -1,0 +1,60 @@
+<md-dialog layout-padding style="overflow: auto">
+    <md-dialog-content class="sticky-container">
+        <h3 class="md-subhead center-align">Formulário de um Novo Jogo</h3>
+
+        <div class="row">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="first_name" type="text" class="validate" name="name">
+                        <label for="first_name">Nome do Jogo</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="last_name" type="text" class="validate" name="game-page">
+                        <label for="last_name">Página do Jogo</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input value="" type="text" class="validate" name="game-community">
+                        <label for="disabled">Comunidade</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input type="text" class="validate" name="steam-link">
+                        <label for="password">Link Steam</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="textarea1" class="materialize-textarea" name="notes"></textarea>
+                        <label for="textarea1">Notas</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <div class="switch">
+                            <label>
+                                Desativado
+                                <input type="checkbox" name="active">
+                                <span class="lever"></span>
+                                Ativado
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </md-dialog-content>
+    <div class="md-actions" layout="row">
+        <span flex></span>
+        <md-button class="md-raised">
+            Enviar
+        </md-button>
+        <md-button class="md-raised md-warn">
+            Cancelar
+        </md-button>
+    </div>
+</md-dialog>

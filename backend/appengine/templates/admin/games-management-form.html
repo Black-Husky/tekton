@@ -1,0 +1,68 @@
+{% extends 'admin/base.html' %}
+{% block body %}
+    <md-toolbar class="md-medium-tall md-hue-1" style="z-index: 1;">
+        <h2 class="md-toolbar-tools">
+            <span>Gerenciar Games</span>
+        </h2>
+    </md-toolbar>
+    <md-content flex layout-align="center center" layout-padding style="z-index: 2; margin-top: -40px">
+        <div class="card-panel grey lighten-3" style="margin-top: -40px; overflow: auto;">
+            <h3 class="md-subhead center-align">Formulário de {{ "Editar o Jogo : "+id | safe if edit else "Novo Jogo" }}</h3>
+
+            <form action="/admin/games-management-form/{{ "edit/"+id | safe if edit else "save" }}" class="col s12" method="post">
+                {{ csrf_input() }}
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="input_name" type="text" value="{{ properties.name | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.name }}" name="name">
+                        <label for="input_name">Nome do Jogo *</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="input_nickname" type="text" value="{{ properties.nick_name | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.nick_name }}" name="nick_name">
+                        <label for="input_nickname">Nome de Exibição *</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="input_game_page" value="{{ properties.game_page | safe if properties }}" type="text" class="validate" name="game_page">
+                        <label for="input_game_page">Página do Jogo</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="input_game_community" value="{{ properties.game_community | safe if properties }}" type="text" class="validate" name="game_community">
+                        <label for="input_game_community">Comunidade</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="input_steam_link" value="{{ properties.steam_link | safe if properties }}" type="text" class="validate" name="steam_link">
+                        <label for="input_steam_link">Link Steam</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="textarea_notes" class="materialize-textarea" name="notes">{{ properties.notes | safe if properties }}</textarea>
+                        <label for="textarea_notes">Notas</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <div class="switch">
+                            <label>
+                                Desativado
+                                <input type="checkbox" name="active" {{ "checked" | safe if properties and ("on" in properties.active) }}>
+                                <span class="lever"></span>
+                                Ativado
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div layout="row">
+                    <span flex></span>
+                    <input type="submit" value="Enviar" class="md-button md-raised green" style="margin-right: 10px"/>
+                    <md-button ng-href="/admin/games-management" class="md-raised md-warn">
+                        Cancelar
+                    </md-button>
+                </div>
+            </form>
+        </div>
+    </md-content>
+{% endblock %}

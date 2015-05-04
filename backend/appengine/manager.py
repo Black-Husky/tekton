@@ -956,7 +956,7 @@ def scaffold(app, model, *properties):
 
     _title('creating routes folder')
     init_routes(app)
-    _title('routes home.py')
+    _title('routes games-management.py')
     print init_home_script(app, model)
 
     _title('routes.new.py')

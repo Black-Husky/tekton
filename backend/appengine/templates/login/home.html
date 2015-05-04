@@ -1,60 +1,47 @@
 {% extends 'base/base.html' %}
-{% block css %}
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-social.css"/>
-    <link rel="stylesheet" href="/static/font-awesome-4.2.0/css/font-awesome.min.css"/>
-{% endblock %}
-{% block js %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-{% endblock %}
 {% block body %}
-    <div class="container">
-        <br/>
 
-        <h1 class="text-center">{% trans %}Login Options{% endtrans %}</h1>
-        <br/>
-        <br/>
-        <br/>
-
-        <div class="row">
-            <div class="col-md-4 text-center">
-                <div class="well">
-                    <h2>Email</h2><br/>
+    <md-toolbar class="md-hue-1">
+        <h2 class="md-toolbar-tools">
+            <span>Login Options</span>
+        </h2>
+    </md-toolbar>
+    <md-content layout="column" flex>
+        <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px">
+            <md-grid-tile class="gray" md-rowspan="2" md-colspan="2" md-colspan-sm="1">
+                <div layout="column" layout-align="center center" flex>
+                    <h3>Email</h3>
 
                     <form action="{{ login_passwordless_path }}" method="post">
                         <div class="input-group">
-                            <input type="email" name="email" placeholder="{% trans %}Type your email{% endtrans %}"
-                                   class="form-control"/>
-      <span class="input-group-btn">
-           <button class="btn btn-success" type="submit">Login</button>
-      </span>
+                            <input type="email" name="email" placeholder="{% trans %}Type your email{% endtrans %}" class="form-control"/>
                         </div>
                         {{ csrf_input() }}
+                        <md-grid-tile-footer layout-align="center center" layout="column">
+                            <md-button class="md-primary" type="submit">Login</md-button>
+                        </md-grid-tile-footer>
                     </form>
                 </div>
-            </div>
-            <div class="col-md-4 text-center">
-                <div class="well">
-                    <h2>Google</h2><br/>
-                    <a href="{{ login_google_path }}" class="btn btn-social btn-google-plus"><i
-                            class="fa fa-google-plus"></i>Google</a>
+            </md-grid-tile>
+            <md-grid-tile class="blue" md-rowspan="2" md-colspan="2" md-colspan-sm="1">
+                <form id="fbform" action="{{ login_facebook_path }}" method="post">
+                    {{ csrf_input() }}
+                    <input id="tokeninput" type="hidden" name="token"/>
+                </form>
+                <div layout="column" layout-align="center center" flex>
+                    <md-button class="md-raised md-primary" onclick="fb_login();">Facebook</md-button>
                 </div>
-            </div>
-            <div class="col-md-4 text-center">
-                <div class="well">
-                    <h2>Facebook</h2><br/>
-                    <button class="btn btn-social btn-facebook" onclick="fb_login();">
-                        <i class="fa fa-facebook"></i>
-                        Facebook
-                    </button>
-                    <form id="fbform" action="{{ login_facebook_path }}" method="post">
-                        {{ csrf_input() }}
-                        <input id="tokeninput" type="hidden" name="token"/>
-                    </form>
+            </md-grid-tile>
+            <md-grid-tile class="red" md-rowspan="2" md-colspan="2" md-colspan-sm="1">
+                <div layout-align="center center" layout="column" flex>
+                    <md-button class="md-raised" ng-href="{{ login_google_path }}" target="_self">Google</md-button>
                 </div>
-            </div>
-        </div>
-    </div>
+            </md-grid-tile>
+        </md-grid-list>
+    </md-content>
     {# see https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.0#}
+{% endblock %}
+{% block js %}
     <script>
 
         var checkFacebookLogin = function () {
@@ -112,7 +99,5 @@
             js.src = "//connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
-
-
     </script>
 {% endblock %}
