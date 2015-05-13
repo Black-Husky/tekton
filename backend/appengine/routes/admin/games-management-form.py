@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from google.appengine.ext import ndb
-from gaeforms.ndb.form import ModelForm
-from gaegraph.model import Node
+
 from gaecookie.decorator import no_csrf
 from gaeforms import base
 from gaeforms.base import Form
+from gaepermission.base_commands import MainUserForm
 from gaepermission.decorator import login_not_required, permissions, login_required
 from config.template_middleware import TemplateResponse
+from gaepermission.model import MainUser
 from permission_app.model import ADMIN
-from routes.admin.home import GameForm, GameFormTable
-from routes.admin.home import Game
-from routes.admin.home import ArcGen
+from routes.middleware.home import GameForm, GameFormTable, Game, ArcGen
 from tekton import router
 from routes.login import passwordless, facebook
 from routes.permission import home as permission_home, admin
@@ -27,7 +26,11 @@ def index(_resp, id=None, context={}):
         if not game: return RedirectResponse(router.to_path(index))
         game_form = GameFormTable()
         game_form.fill_with_model(game)
-        context = {'properties': game_form, 'edit': True, 'id' : id}
+        query = ArcGen.query(ArcGen.destination == game.key)
+        arc = query.fetch()
+        query = MainUser.query(MainUser.key == arc[0].origin)
+        autor = query.fetch()
+        context = {'properties': game_form, 'edit': True, 'id' : id, 'autor' : autor[0]}
         return TemplateResponse(context, template_path="/admin/games-management-form.html")
     return TemplateResponse(context, template_path="admin/games-management-form.html")
 
@@ -65,6 +68,9 @@ def delete(_resp, _logged_user, id):
 #@permissions(ADMIN)
 @login_required
 def edit(_resp, _logged_user, id, **properties):
+    if('active' in properties and ("on" in properties['active'])):
+        properties['active'] = True
+    else : properties['active'] = False
     errors = {}
     game = Game.get_by_id(int(id))
     game_form = GameForm(**properties)

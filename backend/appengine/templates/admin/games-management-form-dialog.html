@@ -1,35 +1,54 @@
-<md-dialog layout-padding style="overflow: auto">
-    <md-dialog-content class="sticky-container">
-        <h3 class="md-subhead center-align">Formulário de um Novo Jogo</h3>
+<md-dialog layout-padding style="overflow: auto" flex ng-controller="formController">
+    <div class="dialog-overlay" layout="row" layout-align="center center">
+        <md-progress-circular class="md-warn" md-mode="indeterminate"></md-progress-circular>
+    </div>
 
-        <div class="row">
-            <form class="col s12">
+    <div class="dialog-overlay-success" layout="column" layout-align="center center">
+        <i class="large mdi-action-done"></i>
+        <h1>Jogo Salvo!</h1>
+    </div>
+
+    <md-dialog-content layout layout-padding>
+        <div class="card-panel grey lighten-3" style="overflow: auto; width: 100%">
+            <h3 class="md-subhead center-align">Formulário de {{ "Editar o Jogo : "+id | safe if edit else "Novo Jogo" }}</h3>
+
+            <form ng-submit="processForm($event)"
+                    {#action="/admin/games-management-form/{{ "edit/"+id | safe if edit else "save" }}"#} class="col s12">
+
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="first_name" type="text" class="validate" name="name">
-                        <label for="first_name">Nome do Jogo</label>
+                        <label for="input_name">Nome do Jogo *</label>
+                        <input id="input_name" type="text" class="validate" name="name" ng-model="formData.name">
+
+                        <div id="input-name-error" class="input-error md-caption"></div>
                     </div>
                     <div class="input-field col s6">
-                        <input id="last_name" type="text" class="validate" name="game-page">
-                        <label for="last_name">Página do Jogo</label>
+                        <input id="input_nickname" type="text" value="{{ properties.nick_name | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.nick_name }}" name="nickname" ng-model="formData.nickname">
+                        <label for="input_nickname">Nome de Exibição *</label>
+
+                        <div id="input-nickname-error" class="input-error md-caption"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="input_game_page" value="{{ properties.game_page | safe if properties }}" type="text" class="validate" name="game_page" ng-model="formData.game_page">
+                        <label for="input_game_page">Página do Jogo</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="input_game_community" value="{{ properties.game_community | safe if properties }}" type="text" class="validate" name="game_community" ng-model="formData.game_community">
+                        <label for="input_game_community">Comunidade</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input value="" type="text" class="validate" name="game-community">
-                        <label for="disabled">Comunidade</label>
+                        <input id="input_steam_link" value="{{ properties.steam_link | safe if properties }}" type="text" class="validate" name="steam_link" ng-model="formData.steam_link">
+                        <label for="input_steam_link">Link Steam</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input type="text" class="validate" name="steam-link">
-                        <label for="password">Link Steam</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <textarea id="textarea1" class="materialize-textarea" name="notes"></textarea>
-                        <label for="textarea1">Notas</label>
+                        <textarea id="textarea_notes" class="materialize-textarea validate" name="notes" ng-model="formData.notes">{{ properties.notes | safe if properties }}</textarea>
+                        <label for="textarea_notes">Notas</label>
                     </div>
                 </div>
                 <div class="row">
@@ -37,24 +56,27 @@
                         <div class="switch">
                             <label>
                                 Desativado
-                                <input type="checkbox" name="active">
+                                <input type="checkbox" name="active" ng-model="formData.active" {{ "checked" | safe if properties and properties.active }}>
                                 <span class="lever"></span>
                                 Ativado
                             </label>
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <div layout="row" layout-padding>
+                            <span flex></span>
+                            <input type="submit" value="Enviar" class="md-button md-raised green" style="margin-right: 10px"/>
+                            <md-button ng-click="cancel()"
+                                    {#ng-href="/admin/games-management"#} class="md-raised md-warn">
+                                Cancelar
+                            </md-button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
-
     </md-dialog-content>
-    <div class="md-actions" layout="row">
-        <span flex></span>
-        <md-button class="md-raised">
-            Enviar
-        </md-button>
-        <md-button class="md-raised md-warn">
-            Cancelar
-        </md-button>
-    </div>
 </md-dialog>

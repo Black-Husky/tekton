@@ -10,13 +10,15 @@
         {% if error_msg %}<span class="help-block">{{ error_msg }}</span>{% endif %}
     </div>
 {% endmacro %}
-<html lang="en" ng-app="StarterApp">
+<html lang="en" ng-app="App">
 <head>
+    <link rel="shortcut icon" type="image/png" href="/static/img/banned.png"/>
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/angular-material.min.css">
     <link rel="stylesheet" href="/static/css/fonts.css">
     <link rel="stylesheet" href="/static/css/default.css">
     <link rel="stylesheet" href="/static/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/angular-loading-bar/src/loading-bar.css">
     {% block css %}{% endblock %}
     <meta name="viewport" content="initial-scale=1"/>
     <title>{% block title %}Ban This Cheater{% endblock %}</title>
@@ -28,7 +30,7 @@
             <md-icon md-svg-icon="menu" class="icon26"></md-icon>
         </md-button>
         <md-button ng-href="/" class="md-default-theme waves-effect">
-            <span>Ban This <span style="color: darkorange;"> Cheater <i class="mdi-content-report icon26"></i> </span></span>
+            <span>Ban This<span style="color: darkorange;"> Cheater <i class="mdi-content-report icon26"></i> </span></span>
         </md-button>
         <span flex></span>
         <md-button class="md-icon-button md-default-theme waves-effect" aria-label="search">
@@ -39,7 +41,7 @@
         </md-button>
 
         {% if not _logged_user %}
-            <md-button ng-href="{{ _login_path }}" class=" md-default-theme waves-effect" aria-label="search">
+            <md-button ng-href="{{ _login_path }}" class=" md-default-theme waves-effect" aria-label="Entrar">
                 Entrar
             </md-button>
         {% else %}
@@ -98,21 +100,16 @@
                 <div class="collapsible-header waves-effect"><i class="mdi-hardware-gamepad"></i>Games</div>
                 <div class="collapsible-body">
                     <ul class="collapsible sidenav">
-                        <li>
-                            <div class="collapsible-header waves-effect">Counter-Strike 1.6</div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header waves-effect">Counter-Strike Source</div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header waves-effect">Counter-Strike GO</div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header waves-effect">League of Legends</div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header waves-effect">Outros</div>
-                        </li>
+                        {% if not _game_list %}
+                            <li>
+                                <div class="collapsible-header waves-effect">Não Há Jogos Cadastrados</div>
+                            </li>
+                        {% endif %}
+                        {% for game in _game_list %}
+                            <li>
+                                <div class="collapsible-header waves-effect">{{ game.nickname }}</div>
+                            </li>
+                        {% endfor %}
                     </ul>
                 </div>
             </li>
@@ -160,24 +157,26 @@
                             <span>Usuário Comum</span>{% endif %}
                     </div>
                 </md-grid-tile>
-                <a href="/account">
-                    <md-grid-tile md-colspan="2" md-rowspan="2" class="green">
+
+                <md-grid-tile md-colspan="2" md-rowspan="2" class="green">
+                    <a href="/account">
                         <md-icon md-svg-icon="settings" class="icon48"></md-icon>
                         <md-grid-tile-footer>
                             <h3>Configurações</h3>
                         </md-grid-tile-footer>
-                    </md-grid-tile>
-                </a>
-                <a onclick="logout()">
-                    <md-grid-tile md-colspan="2" md-rowspan="2" class="grey" layout-align="center center">
+                    </a>
+                </md-grid-tile>
 
+
+                <md-grid-tile md-colspan="2" md-rowspan="2" class="grey" layout-align="center center">
+                    <a onclick="logout()">
                         <md-icon md-svg-icon="logout" class="icon48"></md-icon>
                         <md-grid-tile-footer>
                             <h3>Sair</h3>
                         </md-grid-tile-footer>
+                    </a>
+                </md-grid-tile>
 
-                    </md-grid-tile>
-                </a>
                 <md-grid-tile md-colspan="2" md-rowspan="2" class="yellow">
                     <md-icon md-svg-icon="reports" class="icon48"></md-icon>
                     <md-grid-tile-footer>
@@ -207,6 +206,8 @@
 <script src="/static/angular/js/angular-animate.min.js"></script>
 <script src="/static/angular/js/angular-aria.min.js"></script>
 <script src="/static/angular/js/angular-material.min.js"></script>
+<script src="/static/js/gridList.js"></script>
+<script src="/static/angular-loading-bar/src/loading-bar.js"></script>
 
 <script src="/static/js/default.js"></script>
 {% block js %}{% endblock %}

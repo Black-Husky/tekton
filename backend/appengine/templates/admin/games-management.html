@@ -5,66 +5,54 @@
             <span>Gerenciar Games</span>
         </h2>
     </md-toolbar>
-    <md-content flex layout-align="center center" layout-padding style="z-index: 2; overflow: inherit;">
-        <div class="card-panel grey lighten-3" style="margin-top: -40px; overflow: auto;">
+    <md-content flex layout-align="center center" layout-padding style="z-index: 2; margin-top: -40px" ng-controller="tableController" ng-init="init();">
+        <div class="card-panel grey lighten-3" style="margin-top: 0px; overflow: auto; position: relative;">
             <table class="hoverable">
                 <thead>
                 <tr>
                     <th>Ação</th>
                     <th data-field="id">ID</th>
                     <th data-field="id">Nome</th>
+                    <th data-field="id">Nickname</th>
                     <th data-field="name">Página do Jogo</th>
-                    <th data-field="price">Comunidade</th>
-                    <th data-field="price">Link Steam</th>
                     <th data-field="price">Ativo</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for game in game_list %}
-                    <tr>
-                        <td>
-                            <div layout="row">
-{#                                <md-button class="md-icon-button">
-                                    <md-icon md-svg-icon="description"></md-icon>
-                                    <md-tooltip>
-                                        Detalhes
-                                    </md-tooltip>
-                                </md-button>#}
-                                <form action="/admin/games-management-form/{{ game.id }}" method="post">
-                                    {{ csrf_input() }}
-                                    <md-button class="md-icon-button">
-                                        <md-icon md-svg-icon="edit"></md-icon>
-                                        <md-tooltip>
-                                            Editar
-                                        </md-tooltip>
-                                </form>
-                                </md-button>
-                                <form action="/admin/games-management-form/delete/{{ game.id }}" method="post">
-                                    {{ csrf_input() }}
-                                    <md-button class="md-icon-button">
-                                        <md-icon md-svg-icon="delete"></md-icon>
-                                        <md-tooltip>
-                                            Excluir
-                                        </md-tooltip>
-                                    </md-button>
-                                </form>
-                            </div>
-                        </td>
-                        <td>{{ game.id }}</td>
-                        <td><span class="truncate">{{ game.name }}</span></td>
-                        <td><span class="truncate">{{ game.game_page }}</span></td>
-                        <td><span class="truncate">{{ game.game_community }}</span></td>
-                        <td><span class="truncate">{{ game.steam_link }}</span></td>
-                        <td>
-                            <div class="switch">
-                                <label>
-                                    <input type="checkbox" disabled name="active" {{ "checked" | safe if "on" in game.active }}>
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
+                <tr ng-repeat="game in game_list.game_list">
+                    <td>
+                        <div layout="row">
+                            <md-button class="md-icon-button" aria-label="Editar Objeto" ng-href="/admin/games-management-form/{[{game.id}]}">
+                                <md-icon md-svg-icon="edit"></md-icon>
+                                <md-tooltip>
+                                    Editar
+                                </md-tooltip>
+                            </md-button>
+
+                            <md-button class="md-icon-button" aria-label="Excluir Objeto" ng-click="delete($event, this, game.id);">
+                                <md-icon md-svg-icon="delete"></md-icon>
+                                <md-tooltip>
+                                    Excluir
+                                </md-tooltip>
+                            </md-button>
+
+                        </div>
+                    </td>
+                    <td>{[{ game.id }]}</td>
+                    <td><span class="truncate">{[{ game.name }]}</span></td>
+                    <td><span class="truncate">{[{ game.nickname }]}</span></td>
+                    <td><a href="{[{ game.game_page }]}" target="_blank">
+                        <span class="truncate">{[{ game.game_page }]}</span></a></td>
+                    <td>
+                        <div class="switch">
+                            <label>
+                                <input type="checkbox" disabled ng-if="game.active" name="active" checked>
+                                <input type="checkbox" disabled ng-if="!game.active" name="active">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -78,12 +66,13 @@
         </a>
         <ul>
             <li>
-                <a class="btn-floating red" ng-href="/admin/games-management-form"><i class="large mdi-social-plus-one"></i></a>
+                <a class="btn-floating red" ng-click="showAdvanced($event)"
+                        {#ng-href="/admin/games-management-form"#}><i class="large mdi-social-plus-one"></i></a>
                 <md-tooltip md-direction="left">
                     Adicionar Item
                 </md-tooltip>
             </li>
-{#            <li><a class="btn-floating blue"><i class="large mdi-notification-sync"></i></a>
+            {#            <li><a class="btn-floating blue"><i class="large mdi-notification-sync"></i></a>
                 <md-tooltip md-direction="left">
                     Atualizar Página
                 </md-tooltip>

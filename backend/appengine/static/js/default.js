@@ -3,50 +3,52 @@
  */
 
 //-->vars<--
-var app = angular.module('StarterApp', ['ngMaterial']);
-var iconsPath = "/static/img/material-design-icons/"
+
+var app = angular.module('App', ['ngMaterial', 'angular-loading-bar', 'ngAnimate']);
+var iconsPath = "/static/img/material-design-icons/";
+
+app.factory('Scopes', function ($rootScope) {
+    var mem = {};
+
+    return {
+        store: function (key, value) {
+            $rootScope.$emit('scope.stored', key);
+            mem[key] = value;
+        },
+        get: function (key) {
+            return mem[key];
+        }
+    };
+});
+
+app.config(function ($interpolateProvider) {
+    $interpolateProvider.startSymbol('{[{');
+    $interpolateProvider.endSymbol('}]}');
+});
 
 //-->Controllers<--
-app.controller('AppCtrl', ['$scope', '$mdSidenav', function ($scope, $mdSidenav) {
+app.controller('AppCtrl', function ($scope, $mdSidenav, $mdDialog, Scopes, $mdToast) {
     $scope.toggleSidenav = function (menuId) {
         $mdSidenav(menuId).toggle();
     };
-}]);
 
-/*app.controller('AppCtrl', function ($scope, $mdDialog) {
+    Scopes.store('AppCtrl', $scope);
+
     $scope.alert = '';
-    $scope.showAlert = function (ev) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        // Modal dialogs should fully cover application
-        // to prevent interaction outside of dialog
-        $mdDialog.show(
-            $mdDialog.alert()
-                .parent(angular.element(document.body))
-                .title('This is an alert title')
-                .content('You can specify some description text in here.')
-                .ariaLabel('Alert Dialog Demo')
-                .ok('Got it!')
-                .targetEvent(ev)
-        );
+    $scope.dialog = '';
+
+    $scope.showActionToast = function (string) {
+        var toast = $mdToast.simple()
+            .content(string)
+            .action('OK')
+            .highlightAction(true)
+            .theme(true)
+            .position("top right");
     };
-    $scope.showConfirm = function (ev) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        var confirm = $mdDialog.confirm()
-            .parent(angular.element(document.body))
-            .title('Would you like to delete your debt?')
-            .content('All of the banks have agreed to forgive you your debts.')
-            .ariaLabel('Lucky day')
-            .ok('Please do it!')
-            .cancel('Sounds like a scam')
-            .targetEvent(ev);
-        $mdDialog.show(confirm).then(function () {
-            $scope.alert = 'You decided to get rid of your debt.';
-        }, function () {
-            $scope.alert = 'You decided to keep your debt.';
-        });
-    };
+
     $scope.showAdvanced = function (ev) {
-        $mdDialog.show({
+        $scope.dialog = $mdDialog;
+        $scope.dialog.show({
             controller: DialogController,
             templateUrl: '/admin/games-management-form-dialog',
             targetEvent: ev
@@ -57,7 +59,7 @@ app.controller('AppCtrl', ['$scope', '$mdSidenav', function ($scope, $mdSidenav)
                 $scope.alert = 'You cancelled the dialog.';
             });
     };
-});*/
+});
 
 function DialogController($scope, $mdDialog) {
     $scope.hide = function () {
@@ -71,12 +73,123 @@ function DialogController($scope, $mdDialog) {
     };
 }
 
+app.controller('tableController', function ($scope, $http, Scopes) {
+
+    Scopes.store('tableController', $scope);
+
+    $scope.game_list = []
+    $scope.init = function () {
+        $http.get("/admin/games-management/list")
+            .error(function (data) {
+                console.log(data);
+            }).success(function (data) {
+                //console.log(data);
+                $scope.game_list = data;
+            });
+    }
+
+    $scope.delete = function (ev, elm, object_id) {
+        /*
+         var element = $(elm).closest("tr").css("display", "none");
+         console.log(element)
+         element.css("display", "none");
+         element.append("<div class='tr-overlay' style='width:"+element.width+"px; height="+element.height+"px; left:"+element.left+"px; top:"+element.top+"px'></div>");
+         */
+        $http.post("/admin/games-management/delete", {id: object_id})
+            .error(function (data, status, headers, config) {
+                console.log(data)
+            })
+            .success(function (data, status, headers, config) {
+                $(this).closest("tr");
+                $scope.init();
+            });
+    }
+});
+
+// create angular controller and pass in $scope and $http
+app.controller('formController', function ($scope, $http, Scopes) {
+
+    // create a blank object to hold our form information
+    // $scope will allow this to pass between controller and view
+    $scope.formData = {};
+    // process the form
+    $scope.processForm = function () {
+        blockForm = function () {
+            $(":submit").attr({
+                "disabled": "disabled",
+                "ng-disabled": true,
+                "aria-disabled": true
+            });
+
+            $(".validate").removeClass("invalid");
+            $(".input-error").text("");
+
+            $(".dialog-overlay").removeClass("dialog-overlay-fade-out").addClass("dialog-overlay-fade-in").on('transitionend webkitTransitionEnd', function (e) {
+                //console.log(e.originalEvent.propertyName);
+                //console.log(e.originalEvent.elapsedTime + 's');
+            });
+        }
+
+        resetForm = function () {
+            $(":submit").removeAttr("disabled ng-disabled aria-disabled");
+
+            $(".validate").removeClass("invalid valid");
+            $(".validate").val("");
+            $(".input-error").text("");
+        }
+
+        blockForm();
+
+        $http({
+            method: 'POST',
+            url: '/admin/games-management/save',
+            data: $scope.formData,  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}  // set the headers so angular passing info as form data (not request payload)
+        })
+            .error(function (error) {
+                console.log(error);
+            })
+            .success(function (data) {
+                var errors = data['errors']
+                if (data.errors) {
+                    if (errors['name']) {
+                        $("#input-name-error").text(errors['name']);
+                        $("input[name='name']").addClass("invalid")
+                        $("input[name='name']").focus()
+                    }
+                    if (errors['nickname']) {
+                        $("#input-nickname-error").text(errors['nickname']);
+                        $("input[name='nickname']").addClass("invalid")
+                        $("input[name='nickname']").focus()
+                    }
+                } else {
+                    // if successful, bind success message to message
+                    Scopes.get("tableController").init();
+                    $(".dialog-overlay-success").removeClass("dialog-overlay-fade-out");
+                    $(".dialog-overlay-success").addClass("dialog-overlay-fade-in")
+                    $(".dialog-overlay-success").click(function () {
+                        $(this).removeClass("dialog-overlay-fade-in").addClass("dialog-overlay-fade-out");
+                        $(this).unbind("click");
+                        resetForm();
+                    });
+                }
+            })
+            .finally(function () {
+                $(".dialog-overlay").removeClass("dialog-overlay-fade-in").addClass("dialog-overlay-fade-out").on('transitionend webkitTransitionEnd', function (e) {
+                    //console.log(e.originalEvent.propertyName);
+                    //console.log(e.originalEvent.elapsedTime + 's');
+                });
+                $(":submit").removeAttr("disabled ng-disabled aria-disabled");
+            });
+    };
+});
+
 app.config(function ($mdThemingProvider) {
     $mdThemingProvider.theme('default')
         .dark();
 });
 
-app.config( function($mdThemingProvider){
+app.config(function ($mdThemingProvider) {
     // Configure a dark theme with primary foreground yellow
     $mdThemingProvider.theme('docs-dark', 'default')
         .primaryPalette('yellow')

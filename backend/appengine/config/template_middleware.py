@@ -74,7 +74,7 @@ class TemplateWriteMiddleware(Middleware):
         fcn = self.dependencies['_fcn']
         if isinstance(fcn_response, TemplateResponse):
             context = fcn_response.context or {}
-            for key in ('_logged_user', '_login_path', '_logout_path'):
+            for key in ('_logged_user', '_login_path', '_logout_path', '_game_list'):
                 context[key] = self.dependencies[key]
             if '_csrf_code' in self.dependencies:
                 context['_csrf_code'] = self.dependencies['_csrf_code']

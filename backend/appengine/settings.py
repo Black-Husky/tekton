@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from gaecookie.middleware import CSRFMiddleware, CSRFInputToDependency
 from locale_app.middleware import LocaleMiddleware
 from multitenancy import MultitenacyMiddleware, set_subdomain, set_domain
+from routes.middleware.home import ModifiedMiddleware
 from tekton.gae.middleware.json_middleware import JsonResponseMiddleware
 from config.template_middleware import TemplateMiddleware, TemplateWriteMiddleware
 from tekton.gae.middleware.email_errors import EmailMiddleware
@@ -33,6 +34,7 @@ MIDDLEWARE_LIST = [MultitenacyMiddleware,
                    CSRFMiddleware,
                    PermissionMiddleware,
                    ExecutionMiddleware,
+                   ModifiedMiddleware,
                    TemplateWriteMiddleware,
                    JsonResponseMiddleware,
                    RedirectMiddleware]

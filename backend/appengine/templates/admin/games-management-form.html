@@ -17,7 +17,7 @@
                         <label for="input_name">Nome do Jogo *</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="input_nickname" type="text" value="{{ properties.nick_name | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.nick_name }}" name="nick_name">
+                        <input id="input_nickname" type="text" value="{{ properties.nickname | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.nickname }}" name="nickname">
                         <label for="input_nickname">Nome de Exibição *</label>
                     </div>
                 </div>
@@ -39,8 +39,13 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="textarea_notes" class="materialize-textarea" name="notes">{{ properties.notes | safe if properties }}</textarea>
+                        <textarea id="textarea_notes" class="materialize-textarea validate" name="notes">{{ properties.notes | safe if properties }}</textarea>
                         <label for="textarea_notes">Notas</label>
+                    </div>
+                </div>
+                                <div class="row">
+                    <div class="input-field col s12">
+                        <span>Autor : {{ autor.name }}</span>
                     </div>
                 </div>
                 <div class="row">
@@ -48,7 +53,7 @@
                         <div class="switch">
                             <label>
                                 Desativado
-                                <input type="checkbox" name="active" {{ "checked" | safe if properties and ("on" in properties.active) }}>
+                                <input type="checkbox" name="active" {{ "checked" | safe if (properties and properties.active) }}>
                                 <span class="lever"></span>
                                 Ativado
                             </label>

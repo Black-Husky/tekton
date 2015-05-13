@@ -20,24 +20,3 @@ def index():
                              'permission_admin_path': router.to_path(admin),
                              'passwordless_admin_path': router.to_path(passwordless.form),
                              'facebook_admin_path': router.to_path(facebook.form)})
-
-class Game(Node):
-    name = ndb.StringProperty(required=True)
-    nick_name = ndb.StringProperty(required=True)
-    game_page = ndb.StringProperty()
-    steam_link = ndb.StringProperty()
-    notes = ndb.StringProperty()
-    game_community = ndb.StringProperty()
-    active = ndb.StringProperty()
-
-class GameForm(ModelForm):
-    _model_class = Game
-    _include = [Game.name, Game.nick_name, Game.game_page, Game.steam_link, Game.steam_link, Game.notes, Game.game_community, Game.active]
-
-class GameFormTable(ModelForm):
-    _model_class = Game
-    _include = [Game.name, Game.nick_name, Game.game_page, Game.steam_link, Game.steam_link, Game.notes, Game.game_community, Game.active]
-
-class ArcGen(Arc):
-    origin = ndb.KeyProperty(required = True)
-    destination = ndb.KeyProperty(Game, required = True)
