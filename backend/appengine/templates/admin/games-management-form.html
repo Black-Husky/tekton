@@ -7,6 +7,7 @@
     </md-toolbar>
     <md-content flex layout-align="center center" layout-padding style="z-index: 2; margin-top: -40px">
         <div class="card-panel grey lighten-3" style="margin-top: -40px; overflow: auto;">
+            {{ properties }}
             <h3 class="md-subhead center-align">Formulário de {{ "Editar o Jogo : "+id | safe if edit else "Novo Jogo" }}</h3>
 
             <form action="/admin/games-management-form/{{ "edit/"+id | safe if edit else "save" }}" class="col s12" method="post">
@@ -43,9 +44,9 @@
                         <label for="textarea_notes">Notas</label>
                     </div>
                 </div>
-                                <div class="row">
+                <div class="row">
                     <div class="input-field col s12">
-                        <span>Autor : {{ autor.name }}</span>
+                        <span>Autor : {{ autor.name | safe if autor }}</span>
                     </div>
                 </div>
                 <div class="row">

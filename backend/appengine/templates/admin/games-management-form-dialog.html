@@ -1,10 +1,11 @@
-<md-dialog layout-padding style="overflow: auto" flex ng-controller="formController">
+<md-dialog layout-padding style="overflow: auto" flex ng-controller="formController" ng-init="init({{ id }});">
     <div class="dialog-overlay" layout="row" layout-align="center center">
         <md-progress-circular class="md-warn" md-mode="indeterminate"></md-progress-circular>
     </div>
 
     <div class="dialog-overlay-success" layout="column" layout-align="center center">
         <i class="large mdi-action-done"></i>
+
         <h1>Jogo Salvo!</h1>
     </div>
 
@@ -12,18 +13,19 @@
         <div class="card-panel grey lighten-3" style="overflow: auto; width: 100%">
             <h3 class="md-subhead center-align">Formulário de {{ "Editar o Jogo : "+id | safe if edit else "Novo Jogo" }}</h3>
 
-            <form ng-submit="processForm($event)"
-                    {#action="/admin/games-management-form/{{ "edit/"+id | safe if edit else "save" }}"#} class="col s12">
+            <form ng-submit="processForm($event, '{{ "edit" | safe if edit else "save" }}')" class="col s12">
+                <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code" ng-model="formData._csrf_code"/>
+                <input id="input_id" type="hidden" name="id" ng-model="formData.id">
 
                 <div class="row">
                     <div class="input-field col s6">
                         <label for="input_name">Nome do Jogo *</label>
-                        <input id="input_name" type="text" class="validate" name="name" ng-model="formData.name">
+                        <input id="input_name" type="text" class="validate {{ "invalid" | safe if errors and errors.name }}" name="name" ng-model="formData.name">
 
                         <div id="input-name-error" class="input-error md-caption"></div>
                     </div>
                     <div class="input-field col s6">
-                        <input id="input_nickname" type="text" value="{{ properties.nick_name | safe if properties }}" class="validate {{ "invalid" | safe if errors and errors.nick_name }}" name="nickname" ng-model="formData.nickname">
+                        <input id="input_nickname" type="text" class="validate {{ "invalid" | safe if errors and errors.nickname }}" name="nickname" ng-model="formData.nickname">
                         <label for="input_nickname">Nome de Exibição *</label>
 
                         <div id="input-nickname-error" class="input-error md-caption"></div>
@@ -31,24 +33,29 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="input_game_page" value="{{ properties.game_page | safe if properties }}" type="text" class="validate" name="game_page" ng-model="formData.game_page">
+                        <input id="input_game_page" type="text" class="validate" name="game_page" ng-model="formData.game_page">
                         <label for="input_game_page">Página do Jogo</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="input_game_community" value="{{ properties.game_community | safe if properties }}" type="text" class="validate" name="game_community" ng-model="formData.game_community">
+                        <input id="input_game_community" type="text" class="validate" name="game_community" ng-model="formData.game_community">
                         <label for="input_game_community">Comunidade</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="input_steam_link" value="{{ properties.steam_link | safe if properties }}" type="text" class="validate" name="steam_link" ng-model="formData.steam_link">
+                        <input id="input_steam_link" type="text" class="validate" name="steam_link" ng-model="formData.steam_link">
                         <label for="input_steam_link">Link Steam</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="textarea_notes" class="materialize-textarea validate" name="notes" ng-model="formData.notes">{{ properties.notes | safe if properties }}</textarea>
+                        <textarea id="textarea_notes" name="notes" class="materialize-textarea validate" ng-model="formData.notes"></textarea>
                         <label for="textarea_notes">Notas</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <span>Autor : {{ autor.name | safe if autor }}</span>
                     </div>
                 </div>
                 <div class="row">
@@ -69,8 +76,7 @@
                         <div layout="row" layout-padding>
                             <span flex></span>
                             <input type="submit" value="Enviar" class="md-button md-raised green" style="margin-right: 10px"/>
-                            <md-button ng-click="cancel()"
-                                    {#ng-href="/admin/games-management"#} class="md-raised md-warn">
+                            <md-button ng-click="cancel()" type="reset" class="md-raised md-warn">
                                 Cancelar
                             </md-button>
                         </div>

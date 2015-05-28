@@ -22,20 +22,22 @@
                 <tr ng-repeat="game in game_list.game_list">
                     <td>
                         <div layout="row">
-                            <md-button class="md-icon-button" aria-label="Editar Objeto" ng-href="/admin/games-management-form/{[{game.id}]}">
+                            <md-button class="md-icon-button" aria-label="Editar Objeto" ng-click="showEdit($event, game.id)" {#ng-href="/admin/games-management-form/{[{game.id}]}"#}>
                                 <md-icon md-svg-icon="edit"></md-icon>
                                 <md-tooltip>
                                     Editar
                                 </md-tooltip>
                             </md-button>
-
-                            <md-button class="md-icon-button" aria-label="Excluir Objeto" ng-click="delete($event, this, game.id);">
-                                <md-icon md-svg-icon="delete"></md-icon>
-                                <md-tooltip>
-                                    Excluir
-                                </md-tooltip>
-                            </md-button>
-
+                            <form id="form-{[{game.id}]}" ng-submit="delete($event , game.id)">
+                                {{ csrf_input() }}
+                                <input type="hidden" name="id" ng-value="game.id"/>
+                                <md-button type="submit" class="md-icon-button" name="submit" value="delete" aria-label="Excluir Objeto">
+                                    <md-icon md-svg-icon="delete"></md-icon>
+                                    <md-tooltip>
+                                        Excluir
+                                    </md-tooltip>
+                                </md-button>
+                            </form>
                         </div>
                     </td>
                     <td>{[{ game.id }]}</td>
@@ -66,7 +68,7 @@
         </a>
         <ul>
             <li>
-                <a class="btn-floating red" ng-click="showAdvanced($event)"
+                <a class="btn-floating red" ng-click="showAdd($event)"
                         {#ng-href="/admin/games-management-form"#}><i class="large mdi-social-plus-one"></i></a>
                 <md-tooltip md-direction="left">
                     Adicionar Item

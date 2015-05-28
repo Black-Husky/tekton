@@ -1,12 +1,12 @@
-{% macro csrf_input() %}
-    <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code"/>
+{% macro csrf_input(ng_model="") %}
+    <input type="hidden" value="{{ _csrf_code }}" name="_csrf_code" {% if(ng_model !="") %} ng-model="{{ ng_model }}._csrf_code" {% endif %}/>
 {% endmacro %}
-{% macro form_input(label,property,value,error_msg) %}
+{% macro form_input(label,property,ng_model,value,error_msg) %}
     <div class="form-group {{ ' has-error' if error_msg }}">
         <label for="{{ property }}Input"
                class="control-label">{{ label }} </label>
         <input id="{{ property }}Input" type="text" class="form-control" name="{{ property }}"
-               value="{{ value }}"/>
+               value="{{ value }}", ng-model="{{ ng_model }}"/>
         {% if error_msg %}<span class="help-block">{{ error_msg }}</span>{% endif %}
     </div>
 {% endmacro %}

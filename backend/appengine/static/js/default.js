@@ -46,7 +46,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $mdDialog, Scopes, $mdTo
             .position("top right");
     };
 
-    $scope.showAdvanced = function (ev) {
+    $scope.showAdd = function (ev) {
         $scope.dialog = $mdDialog;
         $scope.dialog.show({
             controller: DialogController,
@@ -54,9 +54,23 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $mdDialog, Scopes, $mdTo
             targetEvent: ev
         })
             .then(function (answer) {
-                $scope.alert = 'You said the information was "' + answer + '".';
+
             }, function () {
-                $scope.alert = 'You cancelled the dialog.';
+
+            });
+    };
+
+    $scope.showEdit = function (ev, id) {
+        $scope.dialog = $mdDialog;
+        $scope.dialog.show({
+            controller: DialogController,
+            templateUrl: '/admin/games-management-form-dialog/' + id,
+            targetEvent: ev
+        })
+            .then(function (answer) {
+
+            }, function () {
+
             });
     };
 });
@@ -75,10 +89,11 @@ function DialogController($scope, $mdDialog) {
 
 app.controller('tableController', function ($scope, $http, Scopes) {
 
+    // $scope will allow this to pass between controller and view
     Scopes.store('tableController', $scope);
 
-    $scope.game_list = []
     $scope.init = function () {
+        $scope.game_list = []
         $http.get("/admin/games-management/list")
             .error(function (data) {
                 console.log(data);
@@ -88,19 +103,33 @@ app.controller('tableController', function ($scope, $http, Scopes) {
             });
     }
 
-    $scope.delete = function (ev, elm, object_id) {
+    $scope.delete = function (ev, id) {
         /*
          var element = $(elm).closest("tr").css("display", "none");
          console.log(element)
          element.css("display", "none");
          element.append("<div class='tr-overlay' style='width:"+element.width+"px; height="+element.height+"px; left:"+element.left+"px; top:"+element.top+"px'></div>");
          */
-        $http.post("/admin/games-management/delete", {id: object_id})
+
+        // get all the inputs into an array.
+        var $inputs = $("#form-" + id + " :input");
+
+        // get an associative array of just the values.
+        var values = {};
+        $inputs.each(function () {
+            values[this.name] = $(this).val();
+        });
+
+        $http({
+            method: 'POST',
+            url: '/admin/games-management/delete',
+            data: values,  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}  // set the headers so angular passing info as form data (not request payload)
+        })
             .error(function (data, status, headers, config) {
                 console.log(data)
             })
             .success(function (data, status, headers, config) {
-                $(this).closest("tr");
                 $scope.init();
             });
     }
@@ -112,8 +141,34 @@ app.controller('formController', function ($scope, $http, Scopes) {
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
     $scope.formData = {};
+
+    $scope.init = function (id) {
+        if (id) {
+            $http({
+                method: 'POST',
+                url: '/admin/games-management/search_id/' + id,
+                data: $scope.formData,  // pass in data as strings
+                headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}  // set the headers so angular passing info as form data (not request payload)
+            })
+                .error(function (error) {
+                    console.log(error);
+                })
+                .success(function (data) {
+                    $('label').addClass('active')
+                    $scope.formData.name = data.name;
+                    $scope.formData.nickname = data.nickname;
+                    $scope.formData.notes = data.notes;
+                    $scope.formData.active = data.active;
+                    $scope.formData.game_page = data.game_page;
+                    $scope.formData.game_community = data.game_community;
+                    $scope.formData.steam_link = data.steam_link;
+                    $scope.formData.id = data.id;
+                });
+        };
+    };
+
     // process the form
-    $scope.processForm = function () {
+    $scope.processForm = function (ev, path) {
         blockForm = function () {
             $(":submit").attr({
                 "disabled": "disabled",
@@ -136,13 +191,14 @@ app.controller('formController', function ($scope, $http, Scopes) {
             $(".validate").removeClass("invalid valid");
             $(".validate").val("");
             $(".input-error").text("");
+            $scope.formData = {};
         }
 
         blockForm();
 
         $http({
             method: 'POST',
-            url: '/admin/games-management/save',
+            url: '/admin/games-management/'+path,
             data: $scope.formData,  // pass in data as strings
             headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}  // set the headers so angular passing info as form data (not request payload)
         })
@@ -170,7 +226,9 @@ app.controller('formController', function ($scope, $http, Scopes) {
                     $(".dialog-overlay-success").click(function () {
                         $(this).removeClass("dialog-overlay-fade-in").addClass("dialog-overlay-fade-out");
                         $(this).unbind("click");
-                        resetForm();
+                        if(path == "save") {
+                            resetForm();
+                        }
                     });
                 }
             })
