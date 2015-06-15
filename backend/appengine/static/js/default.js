@@ -270,6 +270,7 @@ app.config(function ($mdIconProvider) {
         .icon('delete', iconsPath + 'ic_delete_48px.svg')
         .icon('description', iconsPath + 'ic_description_48px.svg')
         .icon('edit', iconsPath + 'ic_edit_48px.svg')
+        .icon('download', iconsPath + 'ic_file_download_48px.svg')
         .icon('keyboard-right-arrow', iconsPath + 'ic_keyboard_arrow_right_48px.svg');
     // Register a named icon set of SVGs
 });

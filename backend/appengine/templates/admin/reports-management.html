@@ -1,0 +1,70 @@
+{% extends 'admin/base.html' %}
+{% block body %}
+    <md-toolbar class="md-medium-tall md-hue-1" style="z-index: 1;">
+        <h2 class="md-toolbar-tools">
+            <span>Gerenciar Reports</span>
+        </h2>
+    </md-toolbar>
+    <md-content flex layout-align="center center" layout-padding style="z-index: 2; margin-top: -40px; min-height: inherit;">
+        <div class="card-panel grey lighten-3" style="margin-top: -40px; overflow: auto;">
+            <h3 class="md-subhead center-align">Formulário de Novo Report</h3>
+
+            <form action="{{ save_path }}" method="post" class="col s12" role="form" enctype="multipart/form-data">
+                {{ csrf_input() }}
+                <div class="row">
+                    <div class="input-field col s6">
+                        <div class="file-field input-field">
+                            <input class="file-path validate" type="text"/>
+                            <div class="btn">
+                                <span>File</span>
+                                <input type="file" name="files[]" multiple="multiple" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div layout="row">
+                    <span flex></span>
+                    <input type="submit" value="Enviar" class="md-button md-raised green" style="margin-right: 10px"/>
+                    <md-button type="reset" class="md-raised md-warn">
+                        Cancelar
+                    </md-button>
+                </div>
+            </form>
+        </div>
+        <div class="card-panel grey lighten-3" style="margin-top: 0px; overflow: auto; position: relative;">
+            <table class="hoverable">
+                <thead>
+                <tr>
+                    <th>Ação</th>
+                    <th data-field="id">Imagem</th>
+                    <th data-field="id">Nome</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for arc in archives %}
+                    <tr>
+                        <td>
+                            <div layout="row">
+                                <md-button class="md-icon-button" aria-label="Download" href="{{ arc.download_path }}">
+                                    <md-icon md-svg-icon="download"></md-icon>
+                                    <md-tooltip>
+                                        Download
+                                    </md-tooltip>
+                                </md-button>
+                                <md-button href="{{ arc.delete_path }}" class="md-icon-button" aria-label="Excluir Objeto">
+                                    <md-icon md-svg-icon="delete"></md-icon>
+                                    <md-tooltip>
+                                        Excluir
+                                    </md-tooltip>
+                                </md-button>
+                            </div>
+                        </td>
+                        <td><img src="{{ arc.img_url }}" class="responsive-img"  style="height: 100px;" /></td>
+                        <td><span class="truncate">{{ arc.filename }}</span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </md-content>
+{% endblock %}
